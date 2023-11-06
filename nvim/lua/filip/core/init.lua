@@ -1,2 +1,3 @@
-require ("filip.core.options")
-require ("filip.core.keymaps")
+require("filip.core.options")
+require("filip.core.keymaps")
+
