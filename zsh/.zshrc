@@ -113,9 +113,28 @@ alias vim=nvim
 export NVM_DIR=~/.nvm
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-# xlaunch config to be able to create windows from wsl programs
 alias xlaunch='/c/Program\ Files/VcXsrv/xlaunch.exe -run ~/xlaunchConfig'
 export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0
 export LIBGL_ALWAYS_INDIRECT=1
 export XDG_RUNTIME_DIR=/home/fkoperwas/
 export RUNLEVEL=3
+
+export PROJECTS_FOLDER=$HOME/projects
+fzfChange() {
+  folder_name=$(find $PROJECTS_FOLDER -maxdepth 1 -type d | fzf)
+  tmux new -As $folder_name -c "$folder_list/$folder_name"
+}
+
+# bindkey -s '^g' "find ~/projects -maxdepth 1 -type d | fzf --bind 'enter:become(/usr/bin/tmux {})'^M"
+bindkey -s '^g' "fzfChange^M"
+if [[ ! "$PATH" == */home/fkoperwas/.fzf/bin* ]]; then
+  PATH="${PATH:+${PATH}:}/home/fkoperwas/.fzf/bin"
+fi
+
+# Auto-completion
+# ---------------
+source "$HOME/.fzf/shell/completion.zsh"
+
+# Key bindings
+# ------------
+source "$HOME/.fzf/shell/key-bindings.zsh"
