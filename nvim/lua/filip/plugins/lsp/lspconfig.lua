@@ -88,12 +88,20 @@ return {
 					workspace = {
 						-- make language server aware of runtime files
 						library = {
-							[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-							[vim.fn.stdpath("config") .. "/lua"] = true,
+							library = { vim.env.VIMRUNTIME },
 						},
 					},
 				},
 			},
+		})
+		local omnisharpCmd = { "/home/filip/.local/share/nvim/mason/bin/omnisharp", "--languageserver" }
+		if string.match(vim.loop.os_uname().sysname, "^Windows") == true then
+			omnisharpCmd = { "C:\\ProgramData\\chocolatey\\lib\\omnisharp\\tools\\Omnisharp.exe", "--languageserver" }
+		end
+		lspconfig["omnisharp"].setup({
+			capabilities = capabilities,
+			on_attach = on_attach,
+			cmd = omnisharpCmd,
 		})
 	end,
 }
