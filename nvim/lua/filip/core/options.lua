@@ -32,7 +32,18 @@ opt.cursorline = true -- highlight the current cursor line
 -- Might need to comment this out if not using wsl/windows terminal
 -- But lazyvims default of unnamedplus is slow if using it wsl
 -- windows terminal automatically allows for Ctrl C/V to copy paste
-opt.clipboard = "" -- Sync with system clipboard
+-- windows terminal automatically allows for Ctrl C/V to copy paste
+opt.clipboard = ""
+--	copy = {
+--		["+"] = "win32yank.exe -i --crlf",
+--		["*"] = "win32yank.exe -i --crlf",
+--	},
+--	paste = {
+--		["+"] = "win32yank.exe -o --lf",
+--		["*"] = "win32yank.exe -o --lf",
+--	},
+--	cache_enabled = true,
+--}
 
 -- split windows
 opt.splitright = true -- split vertical window to the right
@@ -40,4 +51,3 @@ opt.splitbelow = true -- split horizontal window to the bottom
 
 -- turn off swapfile
 opt.swapfile = false
-

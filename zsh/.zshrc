@@ -69,14 +69,16 @@ ZSH_THEME="cloud"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
+    zsh-autosuggestions
     git
     autojump
-    dirhistory
     fasd
     wd
+    web-search
+    copypath
+    copyfile
 )
 
-source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
@@ -104,6 +106,8 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+export PATH="$PATH:$HOME/.local/bin"
+
 alias python=python3
 alias py=python3
 alias pip=pip3
@@ -119,22 +123,80 @@ export LIBGL_ALWAYS_INDIRECT=1
 export XDG_RUNTIME_DIR=/home/fkoperwas/
 export RUNLEVEL=3
 
+
+# FZF configuration
+# ---------------
 export PROJECTS_FOLDER=$HOME/projects
 fzfChange() {
   folder_name=$(find $PROJECTS_FOLDER -maxdepth 1 -type d | fzf)
   tmux new -As $folder_name -c "$folder_list/$folder_name"
 }
 
+USERNAME=$(whoami)
+
 # bindkey -s '^g' "find ~/projects -maxdepth 1 -type d | fzf --bind 'enter:become(/usr/bin/tmux {})'^M"
 bindkey -s '^g' "fzfChange^M"
-if [[ ! "$PATH" == */home/fkoperwas/.fzf/bin* ]]; then
-  PATH="${PATH:+${PATH}:}/home/fkoperwas/.fzf/bin"
+if [[ ! "$PATH" == */home/$USERNAME/.fzf/bin* ]]; then
+  PATH="${PATH:+${PATH}:}/home/$USERNAME/.fzf/bin"
 fi
 
-# Auto-completion
-# ---------------
-source "$HOME/.fzf/shell/completion.zsh"
+function vimf () { vim $(fzf) }
+function vimff () { vim $(fd . $HOME | fzf) }
+function vimfw () { vim $(fd . /mnt/c/Users/Filip-PC/Programming/ | fzf) }
+function vimffw () { vim $(fd . /mnt/c | fzf) }
+
+function lsf () { ls $(find . -type d | fzf) }
+function lsf () { ls $(find $HOME -type d | fzf) }
+function lsfw () { ls $(find /mnt/c/Users/Filip-PC/Programming -type d | fzf) }
+function lsffw () {lscd $(find /mnt/c -type d | fzf) }
+
+function cdf () { cd $(find . -type d | fzf) }
+function cdff () { cd $(find $HOME -type d | fzf) }
+function cdfw () { cd $(find /mnt/c/Users/Filip-PC/Programming -type d | fzf) }
+function cdffw () { cd $(find /mnt/c -type d | fzf) }
 
 # Key bindings
 # ------------
 source "$HOME/.fzf/shell/key-bindings.zsh"
+
+
+# Autojump configuration
+# ---------------
+function jo () {
+        if [[ ${1} == -* ]] && [[ ${1} != "--" ]]
+        then
+                autojump ${@}
+                return
+        fi
+        setopt localoptions noautonamedirs
+        local output="$(autojump ${@})"
+        if [[ -d "${output}" ]]
+        then
+                case ${OSTYPE} in
+                        (linux*) explorer.exe "$(wslpath -w ${output})" ;;
+                        (darwin*) open "${output}" ;;
+                        (cygwin) cygstart "" $(cygpath -w -a ${output}) ;;
+                        (*) echo "Unknown operating system: ${OSTYPE}" >&2 ;;
+                esac
+        else
+                echo "autojump: directory '${@}' not found"
+                echo "\n${output}\n"
+                echo "Try \`autojump --help\` for more information."
+                false
+        fi
+}
+
+
+# zsh-autosuggestions configuration
+# ---------------
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+
+
+# source oh-my-zsh at the end
+# ---------------
+source $ZSH/oh-my-zsh.sh
+
+# Auto-completion
+# ---------------
+#source "$HOME/.fzf/shell/completion.zsh"
+#autoload -U compinit; compinit
