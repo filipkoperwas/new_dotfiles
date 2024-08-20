@@ -75,6 +75,7 @@ return {
 			capabilities = capabilities,
 			on_attach = on_attach,
 		})
+
 		-- configure lua server (with special settings)
 		lspconfig["lua_ls"].setup({
 			capabilities = capabilities,
@@ -94,8 +95,11 @@ return {
 				},
 			},
 		})
+
+		-- configure omnisharp server
 		local omnisharpCmd = { "/home/filip/.local/share/nvim/mason/bin/omnisharp", "--languageserver" }
-		if string.match(vim.loop.os_uname().sysname, "^Windows") == true then
+		-- If on windows, load special omnisharp that works with godot
+		if string.match(vim.loop.os_uname().sysname, "^Windows") == "Windows" then
 			omnisharpCmd = { "C:\\ProgramData\\chocolatey\\lib\\omnisharp\\tools\\Omnisharp.exe", "--languageserver" }
 		end
 		lspconfig["omnisharp"].setup({
