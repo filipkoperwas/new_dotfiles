@@ -6,9 +6,6 @@ return {
 		{ "antosha417/nvim-lsp-file-operations", config = true },
 	},
 	config = function()
-		-- import lspconfig plugin
-		local lspconfig = require("lspconfig")
-
 		-- import cmp-nvim-lsp plugin
 		local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
@@ -70,12 +67,15 @@ return {
 			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 		end
 
-		-- configure clangd
-		lspconfig["clangd"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
+		vim.lsp.config('clangd', {
+    -- Define or modify the configuration for clangd
+      root_markers = { 'build/compile_commands.json', '.clangd', 'compile_commands.json', 'compile_flags.txt', '.git' },
+      on_attach = on_attach,
 		})
+    vim.lsp.enable('clangd')
 
+    --[[
+		-- configure clangd
 		-- configure lua server (with special settings)
 		lspconfig["lua_ls"].setup({
 			capabilities = capabilities,
@@ -107,5 +107,6 @@ return {
 			on_attach = on_attach,
 			cmd = omnisharpCmd,
 		})
+    --]]
 	end,
 }
