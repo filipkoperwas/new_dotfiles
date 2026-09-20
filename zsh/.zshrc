@@ -20,6 +20,7 @@ DISABLE_AUTO_UPDATE="true"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
     zsh-autosuggestions
+    zsh-syntax-highlighting
     git
     autojump
     fasd
@@ -33,7 +34,7 @@ plugins=(
 # User configuration
 
 export PATH="$PATH:$HOME/.local/bin"
-export PATH="$PATH:/opt/nvim-linux64/bin"
+export PATH="$PATH:/opt/nvim/bin"
 
 alias python=python3
 alias py=python3
@@ -44,74 +45,29 @@ alias vim=nvim
 export NVM_DIR=~/.nvm
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-alias xlaunch='/c/Program\ Files/VcXsrv/xlaunch.exe -run ~/xlaunchConfig'
-export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0
-export LIBGL_ALWAYS_INDIRECT=1
-export XDG_RUNTIME_DIR=/home/fkoperwas/
-export RUNLEVEL=3
-
 
 # FZF configuration
 # ---------------
-export PROJECTS_FOLDER=$HOME/projects
-fzfChange() {
-  folder_name=$(find $PROJECTS_FOLDER -maxdepth 1 -type d | fzf)
-  tmux new -As $folder_name -c "$folder_list/$folder_name"
-}
-
 USERNAME=$(whoami)
 
-# bindkey -s '^g' "find ~/projects -maxdepth 1 -type d | fzf --bind 'enter:become(/usr/bin/tmux {})'^M"
-bindkey -s '^g' "fzfChange^M"
 if [[ ! "$PATH" == */home/$USERNAME/.fzf/bin* ]]; then
   PATH="${PATH:+${PATH}:}/home/$USERNAME/.fzf/bin"
 fi
 
 function vimf () { vim $(fzf) }
 function vimff () { vim $(fd . $HOME | fzf) }
-function vimfw () { vim $(fd . /mnt/c/Users/Filip-PC/Programming/ | fzf) }
-function vimffw () { vim $(fd . /mnt/c | fzf) }
 
 function lsf () { ls $(find . -type d | fzf) }
 function lsff () { ls $(find $HOME -type d | fzf) }
-function lsfw () { ls $(find /mnt/c/Users/Filip-PC/Programming -type d | fzf) }
-function lsffw () {lscd $(find /mnt/c -type d | fzf) }
 
 function cdf () { cd $(find . -type d | fzf) }
 function cdff () { cd $(find $HOME -type d | fzf) }
-function cdfw () { cd $(find /mnt/c/Users/Filip-PC/Programming -type d | fzf) }
-function cdffw () { cd $(find /mnt/c -type d | fzf) }
 
 # Key bindings
 # ------------
 source "$HOME/.fzf/shell/key-bindings.zsh"
-
-
-# Autojump configuration
-# ---------------
-function jo () {
-        if [[ ${1} == -* ]] && [[ ${1} != "--" ]]
-        then
-                autojump ${@}
-                return
-        fi
-        setopt localoptions noautonamedirs
-        local output="$(autojump ${@})"
-        if [[ -d "${output}" ]]
-        then
-                case ${OSTYPE} in
-                        (linux*) explorer.exe "$(wslpath -w ${output})" ;;
-                        (darwin*) open "${output}" ;;
-                        (cygwin) cygstart "" $(cygpath -w -a ${output}) ;;
-                        (*) echo "Unknown operating system: ${OSTYPE}" >&2 ;;
-                esac
-        else
-                echo "autojump: directory '${@}' not found"
-                echo "\n${output}\n"
-                echo "Try \`autojump --help\` for more information."
-                false
-        fi
-}
+bindkey '^w' forward-word
+bindkey '^b' backward-word
 
 
 # zsh-autosuggestions configuration
@@ -126,3 +82,4 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # source oh-my-zsh at the end
 # ---------------
 source $ZSH/oh-my-zsh.sh
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
